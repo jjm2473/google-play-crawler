@@ -186,7 +186,7 @@ public class GooglePlayAPI {
         HttpEntity c2dmResponseEntity = executePost(URL_LOGIN, new String[][]{{"Email", this.getEmail()},
                 {"Passwd", this.password}, {"service", "ac2dm"}, {"accountType", ACCOUNT_TYPE_HOSTED_OR_GOOGLE},
                 {"has_permission", "1"}, {"source", "android"}, {"app", "com.google.android.gsf"},
-                {"device_country", "us"}, {"device_country", "us"}, {"lang", "en"}, {"sdk_version", "16"}, {"client_sig", "38918a453d07199354f8b19af05ec6562ced5788"},}, null);
+                {"device_country", "us"}, {"device_country", "us"}, {"lang", "en"}, {"sdk_version", "23"}, {"client_sig", "38918a453d07199354f8b19af05ec6562ced5788"},}, null);
 
         Map<String, String> c2dmAuth = Utils.parseResponse(new String(Utils.readAll(c2dmResponseEntity.getContent())));
         return c2dmAuth.get("Auth");
@@ -197,7 +197,7 @@ public class GooglePlayAPI {
 
         String c2dmAuth = loginAC2DM();
         String[][] data = new String[][]{{"app", application}, {"sender", sender}, {"device", new BigInteger(this.getAndroidID(), 16).toString()}};
-        HttpEntity responseEntity = executePost(C2DM_REGISTER_URL, data, getHeaderParameters(c2dmAuth, null, "21"));
+        HttpEntity responseEntity = executePost(C2DM_REGISTER_URL, data, getHeaderParameters(c2dmAuth, null, "23"));
         return Utils.parseResponse(new String(Utils.readAll(responseEntity.getContent())));
     }
 
@@ -221,7 +221,7 @@ public class GooglePlayAPI {
                 {"service", "androidmarket"}, {"accountType", ACCOUNT_TYPE_HOSTED_OR_GOOGLE},
                 {"has_permission", "1"}, {"source", "android"},
                 {"androidId", this.getAndroidID()}, {"app", "com.android.vending"},
-                {"device_country", "en"}, {"lang", "en"}, {"sdk_version", "22"},
+                {"device_country", "US"}, {"lang", "en"}, {"sdk_version", "23"},
                 {"client_sig", "38918a453d07199354f8b19af05ec6562ced5788"},}, null);
 
         Map<String, String> response = Utils.parseResponse(new String(Utils.readAll(responseEntity.getContent())));
@@ -364,8 +364,8 @@ public class GooglePlayAPI {
     public InputStream executeDownload(String url, String cookie) throws IOException {
 
         String[][] headerParams = new String[][]{{"Cookie", cookie},
-                {"User-Agent", "AndroidDownloadManager/5.1.1 (Linux; U; Android 5.1.1; SAMSUNG-SM-G530AZ Build/LMY48B)"},};
-        String ua = "User-Agent: AndroidDownloadManager/5.1.1 (Linux; U; Android 5.1.1; SAMSUNG-SM-G530AZ Build/LMY48B)";
+                {"User-Agent", "AndroidDownloadManager/5.1.1 (Linux; U; Android 5.1.1; SAMSUNG-SM-G530AZ Build/LMY47V)"},};
+        String ua = "User-Agent: AndroidDownloadManager/5.1.1 (Linux; U; Android 5.1.1; SAMSUNG-SM-G530AZ Build/LMY47V)";
         System.out.println("curl -IL \"" + url + "\" -H \"" + ua + "\"" + " -H \"Cookie: " + cookie + "\"");
 
         HttpEntity httpEntity = executeGet(url, null, headerParams);
@@ -436,7 +436,7 @@ public class GooglePlayAPI {
      */
     private ResponseWrapper executeGETRequest(String path, String[][] datapost) throws IOException {
 
-        HttpEntity httpEntity = executeGet(path, datapost, getHeaderParameters(this.getToken(), null, "21"));
+        HttpEntity httpEntity = executeGet(path, datapost, getHeaderParameters(this.getToken(), null, "23"));
         return GooglePlay.ResponseWrapper.parseFrom(httpEntity.getContent());
 
     }
@@ -460,7 +460,7 @@ public class GooglePlayAPI {
      */
     private ResponseWrapper executePOSTRequest(String url, byte[] datapost, String contentType) throws IOException {
 
-        HttpEntity httpEntity = executePost(url, new ByteArrayEntity(datapost), getHeaderParameters(this.getToken(), contentType, "21"));
+        HttpEntity httpEntity = executePost(url, new ByteArrayEntity(datapost), getHeaderParameters(this.getToken(), contentType, "23"));
         return GooglePlay.ResponseWrapper.parseFrom(httpEntity.getContent());
 
     }
@@ -542,7 +542,8 @@ public class GooglePlayAPI {
         HttpResponse response = getClient().execute(request);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode != 200) {
-            throw new GooglePlayException(new String(Utils.readAll(response.getEntity().getContent())));
+            byte[] content = Utils.readAll(response.getEntity().getContent());
+            throw new GooglePlayException(new String(content));
         }
 
         return response.getEntity();
@@ -575,7 +576,7 @@ public class GooglePlayAPI {
         vcodeMap.put("21", "80310011");
         vcodeMap.put("23", "80682400");
         // 该信息为我的调试机器实际数据
-        String ua = "Android-Finsky/" + sdkMap.get(sdk) + " (versionCode=" + vcodeMap.get(sdk) + ",sdk=" + sdk + ",device=AQ5001,hardware=mt6582,product=AQ5001,build=LRX21M:user)";
+        String ua = "Android-Finsky/" + sdkMap.get(sdk) + " (versionCode=" + vcodeMap.get(sdk) + ",sdk=" + sdk + ",device=wt88047,hardware=mt6592,product=wt88047,build=LMY47V:user)";
         // String ua = "Android-Finsky/" + sdkMap.get(sdk) + " (api=" + sdkMap.get(sdk) + ",versionCode=8016014,sdk=" + sdk + ",device=GT-I9300,hardware=aries,product=GT-I9300)"},
         //System.out.printf(ua, sdkMap.get(sdk), vcodeMap.get(sdk), sdk, "AQ5001", "mt6582", "AQ5001", "LRX21M", "user");
         return new String[][]{
