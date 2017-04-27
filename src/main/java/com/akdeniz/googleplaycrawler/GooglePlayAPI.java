@@ -365,8 +365,6 @@ public class GooglePlayAPI {
 
         String[][] headerParams = new String[][]{{"Cookie", cookie},
                 {"User-Agent", "AndroidDownloadManager/5.1.1 (Linux; U; Android 5.1.1; SAMSUNG-SM-G530AZ Build/LMY47V)"},};
-        String ua = "User-Agent: AndroidDownloadManager/5.1.1 (Linux; U; Android 5.1.1; SAMSUNG-SM-G530AZ Build/LMY47V)";
-        System.out.println("curl -IL \"" + url + "\" -H \"" + ua + "\"" + " -H \"Cookie: " + cookie + "\"");
 
         HttpEntity httpEntity = executeGet(url, null, headerParams);
         return httpEntity.getContent();
