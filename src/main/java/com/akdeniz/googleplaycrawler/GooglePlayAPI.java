@@ -40,6 +40,7 @@ import com.akdeniz.googleplaycrawler.GooglePlay.ReviewResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.SearchResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.UploadDeviceConfigRequest;
 import com.akdeniz.googleplaycrawler.GooglePlay.UploadDeviceConfigResponse;
+import org.slf4j.Logger;
 
 /**
  * This class provides
@@ -102,6 +103,8 @@ public class GooglePlayAPI {
     private HttpClient client;
     private String securityToken;
     private String localization;
+
+    private Logger logger = Utils.getLogger(this.getClass());
 
     /**
      * Default constructor. ANDROID ID and Authentication token must be supplied
@@ -537,14 +540,28 @@ public class GooglePlayAPI {
      * Executes given GET/POST request
      */
     private HttpEntity executeHttpRequest(HttpUriRequest request) throws ClientProtocolException, IOException {
-        HttpResponse response = getClient().execute(request);
-        int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode != 200) {
-            byte[] content = Utils.readAll(response.getEntity().getContent());
-            throw new GooglePlayException(new String(content));
+        HttpClient client = getClient();
+        for(int i=2;i>0;--i) {
+            HttpResponse response = client.execute(request);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != 200) {
+                byte[] content = Utils.readAll(response.getEntity().getContent());
+                String msg = new String(content);
+                if(statusCode == 429 && i != 1) {
+                    logger.warn("429 {}", msg);
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    continue;
+                }else{
+                    throw new GooglePlayException(msg);
+                }
+            }
+            return response.getEntity();
         }
-
-        return response.getEntity();
+        return null;
     }
 
     /**

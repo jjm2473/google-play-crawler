@@ -32,6 +32,7 @@ import com.akdeniz.googleplaycrawler.GooglePlay.AndroidCheckinRequest;
 import com.akdeniz.googleplaycrawler.GooglePlay.DeviceConfigurationProto;
 import com.akdeniz.googleplaycrawler.misc.Base64;
 import com.akdeniz.googleplaycrawler.misc.DummyX509TrustManager;
+import org.slf4j.Logger;
 
 /**
  * @author akdeniz
@@ -41,6 +42,30 @@ public class Utils {
     private static final String GOOGLE_PUBLIC_KEY = "AAAAgMom/1a/v0lblO2Ubrt60J2gcuXSljGFQXgcyZWveWLEwo6prwgi3"
             + "iJIZdodyhKZQrNWp5nKJ3srRXcUW+F1BD3baEVGcmEgqaLZUNBjm057pKRI16kB0YppeGx5qIQ5QjKzsR8ETQbKLNWgRY0Q"
             + "RNVz34kMJR3P/LgHax/6rmf5AAAAAwEAAQ==";
+
+    private static LoggerFactory loggerFactory = new LoggerFactory(){
+        @Override
+        public Logger getLogger(String tag) {
+            return org.slf4j.LoggerFactory.getLogger(tag);
+        }
+
+        @Override
+        public Logger getLogger(Class<?> clazz) {
+            return org.slf4j.LoggerFactory.getLogger(clazz);
+        }
+    };
+
+    public static Logger getLogger(String tag){
+        return loggerFactory.getLogger(tag);
+    }
+
+    public static Logger getLogger(Class<?> clazz){
+        return loggerFactory.getLogger(clazz);
+    }
+
+    public static void setLoggerFactory(LoggerFactory newFactory){
+        loggerFactory = newFactory;
+    }
 
     /**
      * Parses key-value response into map.
@@ -307,5 +332,10 @@ public class Utils {
                                 "GL_OES_texture_cube_map", "GL_OES_texture_env_crossbar", "GL_OES_texture_float",
                                 "GL_OES_texture_half_float", "GL_OES_texture_mirrored_repeat", "GL_OES_vertex_array_object",
                                 "GL_OES_vertex_half_float")).build();
+    }
+
+    public static interface LoggerFactory {
+        public Logger getLogger(String tag);
+        public Logger getLogger(Class<?> clazz);
     }
 }
